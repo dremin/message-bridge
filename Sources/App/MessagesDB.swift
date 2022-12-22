@@ -12,10 +12,12 @@ import Vapor
 public class MessagesDB {
     
     var app: Application
+    var contactHelper: ContactHelper
     var db: Connection?
     
     init(_ app: Application) {
         self.app = app
+        contactHelper = ContactHelper(app)
         connect()
     }
     
@@ -41,7 +43,7 @@ public class MessagesDB {
     }
     
     func getRecentChats(limit: Int) -> [Chat] {
-        if (db == nil) {
+        if db == nil {
             connect()
         }
         
@@ -86,10 +88,10 @@ limit ?
                 if !(displayName?.isEmpty ?? true) {
                     chat.name = displayName!
                 } else if !(address?.isEmpty ?? true) {
-                    chat.name = address!
+                    chat.name = contactHelper.parseAddress(address!)
                 }
                 
-                if (text?.isEmpty ?? true) {
+                if text?.isEmpty ?? true {
                     guard let attributedBodyBlob = attributedBody else {
                         app.logger.error("Missing both text and attributedBody")
                         continue
@@ -111,7 +113,7 @@ limit ?
     }
     
     func getChatMessages(chatId: Int, limit: Int) -> [ChatMessage] {
-        if (db == nil) {
+        if db == nil {
             connect()
         }
         
@@ -146,9 +148,13 @@ limit ?
                 let text = row[5] as? String
                 let received = row[6] as? String
                 
-                var message = ChatMessage(id: messageId ?? 0, chatId: chatId ?? 0, from: address ?? "Unknown", isMe: isMe == 1, body: "", received: received ?? "N/A")
+                var message = ChatMessage(id: messageId ?? 0, chatId: chatId ?? 0, from: "Unknown", isMe: isMe == 1, body: "", received: received ?? "N/A")
                 
-                if (text?.isEmpty ?? true) {
+                if !(address?.isEmpty ?? true) {
+                    message.from = contactHelper.parseAddress(address!)
+                }
+                
+                if text?.isEmpty ?? true {
                     guard let attributedBodyBlob = attributedBody else {
                         app.logger.error("Missing both text and attributedBody")
                         continue
