@@ -1,0 +1,143 @@
+/* Base styles */
+html {
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    color: #272727;
+    background: #eee;
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    font: 13px -apple-system, BlinkMacSystemFont, "Lucida Grande", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    height: 100%;
+}
+
+h1,
+h2,
+h3,
+h4,
+p,
+ol,
+ul {
+    margin: 0;
+    padding: 0;
+}
+
+main,
+li {
+    display: block;
+}
+
+h1,
+h2,
+h3,
+h4 {
+    font-size: inherit;
+    font-weight: inherit;
+}
+
+strong {
+    font-weight: bold;
+}
+
+a,
+button, select {
+    color: inherit;
+}
+
+a {
+    text-decoration: none;
+}
+
+::-moz-focus-inner {
+    padding: 0;
+    border: 0;
+}
+
+:focus {
+    outline: 0;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    border: 0;
+}
+
+input {
+	font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+}
+
+/* Header */
+
+table {
+    height: 100%;
+}
+
+h1 {
+	font-size: 18px;
+	font-weight: bold;
+}
+
+/* Chat list */
+#chat-list {
+	height: 100%;
+	float:left;
+	overflow-y: scroll;
+	width:30%;
+}
+
+.chat-list-item {
+	padding: 5px;
+	border-bottom: 1px solid #999;
+	cursor: pointer;
+}
+
+.chat-list-item:hover {
+	background-color: #ddd;
+}
+
+.chat-list-item-active {
+	background-color: #ddd;
+}
+
+.chat-list-item h2 {
+	font-weight: bold;
+}
+
+.chat-list-item h3 {
+	font-size: 12px;
+	color: #aaa;
+}
+
+.chat-list-item h4 {
+	font-size: 10px;
+	font-style: italic;
+	color: #aaa;
+}
+
+/* Chat messages */
+#selected-chat {
+	height: 100%;
+	float: left;
+	width: 70%;
+}
+
+#chat-messages {
+	height: 90%;
+	overflow-y: scroll;
+}
+
+.message-me-imessage,
+.message-me-sms,
+.message-remote {
+	padding: 5px;
+	border-bottom: 1px solid #999;
+}
+
+#chat-messages h4 {
+	font-size: 10px;
+	font-style: italic;
+	color: #aaa;
+}

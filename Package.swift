@@ -9,12 +9,14 @@ let package = Package(
     dependencies: [
         // 💧 A server-side Swift web framework.
         .package(url: "https://github.com/vapor/vapor.git", from: "4.0.0"),
+        .package(url: "https://github.com/stephencelis/SQLite.swift.git", from: "0.14.1")
     ],
     targets: [
         .target(
             name: "App",
             dependencies: [
-                .product(name: "Vapor", package: "vapor")
+                .product(name: "Vapor", package: "vapor"),
+                .product(name: "SQLite", package: "SQLite.swift")
             ],
             swiftSettings: [
                 // Enable better optimizations when building in Release configuration. Despite the use of
