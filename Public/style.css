@@ -122,11 +122,11 @@ h1 {
 	height: 100%;
 	float: left;
 	width: 70%;
+	overflow-y: scroll;
 }
 
-#chat-messages {
-	height: 90%;
-	overflow-y: scroll;
+#selected-chat form {
+	padding: 10px;
 }
 
 .message-me-imessage,

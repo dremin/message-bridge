@@ -15,19 +15,24 @@
 			
 			for(var i = 0; i < activeChat.messages.length; i++) {
 				var cssClass = "message-remote";
+				var from = "Myself";
+				
 				if (activeChat.messages[i].isMe === true && activeChat.service == "iMessage") {
 					cssClass = "message-me-imessage";
 				} else if (activeChat.messages[i].isMe === true) {
 					cssClass = "message-me-sms";
+				} else {
+					from = activeChat.messages[i].from;
 				}
-				var itemHtml = "<div class='" + cssClass + " title='" + activeChat.messages[i].received + "'><h4>" + activeChat.messages[i].from + "</h4><p>" + activeChat.messages[i].body + "</p></div>";
+				
+				var itemHtml = "<div class='" + cssClass + " title='" + activeChat.messages[i].received + "'><h4>" + from + "</h4><p>" + activeChat.messages[i].body + "</p></div>";
 				messagesHtml = itemHtml + messagesHtml;
 			}
 			
 			chatMessagesEl.innerHTML = messagesHtml;
 			
 			if (scrollBottom) {
-				var chatMessagesEl = document.getElementById("chat-messages");
+				var chatMessagesEl = document.getElementById("selected-chat");
 				chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
 				scrollBottom = false;
 			}
