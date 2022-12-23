@@ -15,9 +15,9 @@ public class MessagesDB {
     var contactHelper: ContactHelper
     var db: Connection?
     
-    init(_ app: Application) {
+    init(_ app: Application, contactHelper: ContactHelper) {
         self.app = app
-        contactHelper = ContactHelper(app)
+        self.contactHelper = contactHelper
         connect()
     }
     

@@ -1,15 +1,8 @@
 import Vapor
 
-func routes(_ app: Application) throws {
-    /*app.get { req in
-        return "It works!"
-    }
-
-    app.get("hello") { req -> String in
-        return "Hello, world!"
-    }*/
+func routes(_ app: Application, db: MessagesDB, appleScriptHelper: AppleScriptHelper) throws {
     
-    let messagesController = MessagesController(app)
+    let messagesController = MessagesController(app, db: db, appleScriptHelper: appleScriptHelper)
     let messages = app.grouped("messages")
     
     try messages.register(collection: messagesController)

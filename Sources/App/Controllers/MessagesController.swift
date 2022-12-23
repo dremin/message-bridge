@@ -10,16 +10,18 @@ import Vapor
 
 final class MessagesController {
     
-    var Db: MessagesDB
+    var appleScriptHelper: AppleScriptHelper
+    var db: MessagesDB
     
-    init(_ app: Application) {
-        Db = MessagesDB(app)
+    init(_ app: Application, db: MessagesDB, appleScriptHelper: AppleScriptHelper) {
+        self.db = db
+        self.appleScriptHelper = appleScriptHelper
     }
     
     func getChats(req: Request) throws -> [Chat] {
         do {
             let params = try req.query.decode(ListChatRequest.self)
-            return Db.getRecentChats(limit: params.limit ?? 5)
+            return db.getRecentChats(limit: params.limit ?? 5)
         } catch {
             req.logger.error(Logger.Message(stringLiteral: error.localizedDescription))
             throw Abort(.badRequest)
@@ -33,7 +35,7 @@ final class MessagesController {
                 throw Abort(.badRequest)
             }
             let params = try req.query.decode(ListChatRequest.self)
-            return Db.getChatMessages(chatId: chatId, limit: params.limit ?? 5)
+            return db.getChatMessages(chatId: chatId, limit: params.limit ?? 5)
         } catch {
             req.logger.error(Logger.Message(stringLiteral: error.localizedDescription))
             throw Abort(.badRequest)
@@ -44,24 +46,10 @@ final class MessagesController {
         do {
             let params = try req.content.decode(SendChatRequest.self)
             
-            let script = """
-                tell application "Messages"
-                    set targetBuddy to "\(params.address)"
-                    set targetService to id of 1st account whose service type = \(params.service)
-                    set textMessage to "\(params.message.replacingOccurrences(of: "\"", with: "\\\""))"
-                    set theBuddy to participant targetBuddy of account id targetService
-                    send textMessage to theBuddy
-                end tell
-                """
-            var error: NSDictionary?
-            if let scriptObject = NSAppleScript(source: script) {
-                let _: NSAppleEventDescriptor = scriptObject.executeAndReturnError(&error)
-                
-                if error == nil {
-                    return HTTPStatus.ok
-                } else {
-                    req.logger.error("Error running AppleScript to send message.")
-                }
+            if appleScriptHelper.sendMessage(params) {
+                return HTTPStatus.ok
+            } else {
+                req.logger.error("Error running AppleScript to send message.")
             }
         } catch {
             req.logger.error(Logger.Message(stringLiteral: error.localizedDescription))

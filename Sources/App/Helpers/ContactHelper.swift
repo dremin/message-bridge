@@ -14,6 +14,7 @@ public class ContactHelper {
     var app: Application
     var addressCache: [String:String] = [:]
     let lock = NSLock()
+    let store = CNContactStore()
     
     init(_ app: Application) {
         self.app = app
@@ -43,7 +44,6 @@ public class ContactHelper {
     }
     
     func getContactName(from address: String) -> String {
-        let store = CNContactStore()
         do {
             var predicate: NSPredicate
             var keysToFetch: [CNKeyDescriptor]
@@ -67,6 +67,16 @@ public class ContactHelper {
         } catch {
             app.logger.error("Failed to fetch contact, error: \(error)")
             return address
+        }
+    }
+    
+    func requestPermission() {
+        store.requestAccess(for: .contacts) { granted, error in
+            if (granted) {
+                self.app.logger.notice("User granted permission to access contacts.")
+            } else {
+                self.app.logger.error("User denied permission to access contacts. Chats will not show associated contact names.")
+            }
         }
     }
     
