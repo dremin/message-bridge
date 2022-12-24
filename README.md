@@ -4,6 +4,8 @@ A simple solution for accessing iMessage and SMS chats from older computers.
 
 This is still a work-in-progress, but it works!
 
+![Screenshot](screenshot.png)
+
 ## Requirements
 
 Message Bridge runs on a modern Mac signed into iMessage. Once running, you can access it via a web browser on older computers.
