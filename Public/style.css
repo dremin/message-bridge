@@ -2,8 +2,8 @@
 html {
     -ms-text-size-adjust: 100%;
     -webkit-text-size-adjust: 100%;
-    color: #272727;
-    background: #eee;
+    color: #000;
+    background: #fff;
     height: 100%;
 }
 
@@ -66,18 +66,7 @@ img {
 }
 
 input {
-	font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
-}
-
-/* Header */
-
-table {
-    height: 100%;
-}
-
-h1 {
-	font-size: 18px;
-	font-weight: bold;
+	font: 13px -apple-system, BlinkMacSystemFont, "Lucida Grande", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
 }
 
 /* Chat list */
@@ -85,40 +74,63 @@ h1 {
 	height: 100%;
 	float:left;
 	overflow-y: scroll;
+	overflow-x: hidden;
 	width:30%;
+	background-color: #e7edf6;
 }
 
 .chat-list-item {
-	padding: 5px;
+	padding: 10px;
 	border-bottom: 1px solid #999;
 	cursor: pointer;
 }
 
-.chat-list-item:hover {
-	background-color: #ddd;
-}
-
 .chat-list-item-active {
-	background-color: #ddd;
+	background-color: #3875d7;
 }
 
 .chat-list-item h2 {
 	font-weight: bold;
 }
 
+.chat-list-item-active h2 {
+	color: #fff;
+}
+
 .chat-list-item h3 {
 	font-size: 12px;
-	color: #aaa;
+	color: #393b3e;
+	padding: 5px 0;
+}
+
+.chat-list-item-active h3 {
+	color: #e7edf6;
 }
 
 .chat-list-item h4 {
 	font-size: 10px;
 	font-style: italic;
-	color: #aaa;
+	color: #9aaac6;
 }
 
 /* Chat messages */
+#no-selected-chat {
+	height: 100%;
+	float: left;
+	width: 70%;
+}
+
+#no-selected-chat p {
+	text-align: center;
+	padding: 50px;
+	font-size: 24px;
+	font-weight: bold;
+	color: #ddd;
+	font-family: -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif;
+}
+
 #selected-chat {
+	display: none;
 	height: 100%;
 	float: left;
 	width: 70%;
@@ -127,17 +139,28 @@ h1 {
 
 #selected-chat form {
 	padding: 10px;
+	background: #eee;
 }
 
 .message-me-imessage,
 .message-me-sms,
 .message-remote {
-	padding: 5px;
-	border-bottom: 1px solid #999;
+	border-bottom: 1px solid #ddd;
+	padding: 10px;
 }
 
 #chat-messages h4 {
 	font-size: 10px;
-	font-style: italic;
+	font-weight: bold;
 	color: #aaa;
+	padding-bottom: 3px;
+	float: left;
+}
+
+#chat-messages h4.message-date {
+	float: right;
+}
+
+#chat-messages p {
+	clear: both;
 }

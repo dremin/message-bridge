@@ -16,7 +16,8 @@ Message Bridge runs on a modern Mac signed into iMessage. Once running, you can 
    - Running a web browser that supports `XMLHTTPRequest`:
      - Safari 1.2 or later (tested 1.3 and 3.0)
      - Camino (tested 1.0.6, 1.6.11, and 2.1.2)
-     - Firefox
+     - Firefox (tested 1.0 and later)
+     - Probably others!
 
 ## Installation
 
@@ -42,8 +43,6 @@ There is none, so don't configure your router NAT to port forward Message Bridge
 If you'd like to integrate Message Bridge into your own client, you can use the REST API, which is the same API used by the provided web client.
 
 ### Getting chats
-
-#### Request
 
 GET /messages
 
@@ -88,7 +87,3 @@ POST /messages
 - **address** Chat `replyId` retrieved from `GET /messages` (or address of desired recipient for a new chat)
 - **service** Service for the chat, `iMessage` or `SMS`
 - **message** Message body text
-
-## To do
-
-1. Improve web client
