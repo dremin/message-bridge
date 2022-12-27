@@ -29,7 +29,7 @@ Perform the following steps on your modern Mac signed into iMessage.
 2. Uncompress the downloaded archive and open the MessageBridge directory.
 3. Right-click (or control-click) `MessageBridge`, select Open, then click Open in the alert to start Message Bridge.
 4. **Important:** You must grant permissions so that Message Bridge can send messages, access received messages, and access contacts:
-   - You may be prompted to allow Terminal to access the folder where Message Bridge resides, click OK if so.
+   - You may be prompted to allow Terminal to access the folder where Message Bridge resides; click OK if so.
    - You will be prompted to allow Terminal to control Messages. Click OK.
    - Then, you will be prompted to allow Terminal to access contacts. Click OK.
    - Finally, we must manually enable Full Disk Access for Terminal. To do so, perform these steps:
@@ -46,7 +46,7 @@ There is none, so don't configure your router NAT to port forward Message Bridge
 
 #### Running Message Bridge on a port other than 8080
 
-Open the `MessageBridge.command` file in the `MessageBridge` folder, and change the line `MBPORT=8080` to the desired port. Then, run Message Bridge again.
+Edit the `MessageBridge.command` file in the `MessageBridge` folder, and change the line `MBPORT=8080` to the desired port. Then, run Message Bridge again.
 
 #### Modifying the Message Bridge web client
 
