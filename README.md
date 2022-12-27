@@ -31,7 +31,8 @@ Perform the following steps on your modern Mac signed into iMessage.
    - You will be prompted to allow Terminal to control Messages. Click OK.
    - Then, you will be prompted to allow Terminal to access contacts. Click OK.
    - Finally, we must manually enable Full Disk Access for Terminal. To do so, perform these steps:
-     1. Open System Settings > Privacy & Security > Full Disk Access
+     1. On Ventura (macOS 13) or later, open System Settings > Privacy & Security > Full Disk Access
+        - On Monterey (macOS 12) or earlier, open System Preferences > Security & Privacy > Privacy > Full Disk Access, then click the lock at the bottom of the window to enable access to the settings.
      2. Find Terminal in the list, then click the toggle to enable it.
      3. You will be prompted to restart Terminal to provide full access. Click "Later"--we already have the necessary access.
 5. All set! On the desired machine, open a web browser to the URL shown in the Message Bridge window (`To access Message Bridge, open a browser to: ___`).
