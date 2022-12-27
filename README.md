@@ -11,8 +11,8 @@ This is still a work-in-progress, but it works!
 Message Bridge runs on a modern Mac signed into iMessage. Once running, you can access it via a web browser on older computers.
 
 1. Modern Mac to run Message Bridge:
-   - macOS 10.15 or later (tested on macOS 13)
-   - Messages signed into iMessage
+   - macOS 10.15 or later (tested on macOS 10.15.7 and macOS 13.1)
+   - Messages signed into iMessage with at least one existing chat
 2. Accessing Message Bridge on an old machine:
    - Connected to the same network as the modern Mac running Message Bridge
    - Running a web browser that supports `XMLHTTPRequest`:
@@ -25,16 +25,18 @@ Message Bridge runs on a modern Mac signed into iMessage. Once running, you can 
 
 Perform the following steps on your modern Mac signed into iMessage.
 
-1. Download from the [releases page](https://github.com/dremin/message-bridge/releases)
-2. Uncompress the downloaded archive, then right-click (or control-click) `MessageBridge` and select Open to start Message Bridge.
-3. **Important:** You must grant permissions so that Message Bridge can send messages, access received messages, and access contacts:
-   - First, you will be prompted to allow Terminal to control Messages. Click OK.
+1. Download from the [releases page](https://github.com/dremin/message-bridge/releases).
+2. Uncompress the downloaded archive and open the MessageBridge directory.
+3. Right-click (or control-click) `MessageBridge` and select Open to start Message Bridge.
+4. **Important:** You must grant permissions so that Message Bridge can send messages, access received messages, and access contacts:
+   - You may be prompted to allow Terminal to access your Downloads folder if that's where Message Bridge is, click OK if so.
+   - You will be prompted to allow Terminal to control Messages. Click OK.
    - Then, you will be prompted to allow Terminal to access contacts. Click OK.
    - Finally, we must manually enable Full Disk Access for Terminal. To do so, perform these steps:
      1. Open System Settings > Privacy & Security > Full Disk Access
      2. Find Terminal in the list, then click the toggle to enable it.
      3. You will be prompted to restart Terminal to provide full access. Click "Later"--we already have the necessary access.
-4. All set! On the desired machine, open a web browser to the first URL in the Message Bridge window.
+5. All set! On the desired machine, open a web browser to the URL shown in the Message Bridge window (`To access Message Bridge, open a browser to: ___`).
 
 ## Security
 
