@@ -19,4 +19,4 @@ To access Message Bridge, open a browser to: http://$(ipconfig getifaddr en0):$(
 "
 
 cd "`dirname \"$0\"`"
-Products/usr/local/bin/MessageBridge serve --hostname 0.0.0.0 --port $MBPORT
+bin/MessageBridge serve --hostname 0.0.0.0 --port $MBPORT

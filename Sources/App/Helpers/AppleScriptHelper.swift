@@ -34,26 +34,52 @@ public class AppleScriptHelper {
     }
     
     func launchMessages() {
-        let script = """
-            tell application "Messages"
-                login
-            end tell
-            """
+        var script: String
+        
+        if #available(macOS 11.0, *) {
+            script = """
+                tell application "Messages"
+                    login
+                end tell
+                """
+        } else {
+            script = """
+                tell application "Messages"
+                    log in
+                end tell
+                """
+        }
+        
         if (!runScript(script)) {
             app.logger.error("Error running AppleScript to launch Messages.")
         }
     }
     
     func sendMessage(_ params: SendChatRequest) -> Bool {
-        let script = """
-            tell application "Messages"
-                set targetBuddy to "\(params.address)"
-                set targetService to id of 1st account whose service type = \(params.service)
-                set textMessage to "\(params.message.replacingOccurrences(of: "\"", with: "\\\""))"
-                set theBuddy to participant targetBuddy of account id targetService
-                send textMessage to theBuddy
-            end tell
-            """
+        var script: String
+        
+        if #available(macOS 11.0, *) {
+            script = """
+                tell application "Messages"
+                    set targetBuddy to "\(params.address)"
+                    set targetService to id of 1st account whose service type = \(params.service)
+                    set textMessage to "\(params.message.replacingOccurrences(of: "\"", with: "\\\""))"
+                    set theBuddy to participant targetBuddy of account id targetService
+                    send textMessage to theBuddy
+                end tell
+                """
+        } else {
+            script = """
+                tell application "Messages"
+                    set targetBuddy to "\(params.address)"
+                    set targetService to id of 1st service whose service type = \(params.service)
+                    set textMessage to "\(params.message.replacingOccurrences(of: "\"", with: "\\\""))"
+                    set theBuddy to buddy targetBuddy of service id targetService
+                    send textMessage to theBuddy
+                end tell
+                """
+        }
+        
         if (runScript(script)) {
             return true
         } else {
