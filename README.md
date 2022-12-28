@@ -15,7 +15,7 @@ Message Bridge runs on a modern Mac signed into iMessage. Once running, you can 
    - Connected to the same network as the modern Mac running Message Bridge
    - Running a web browser that supports `XMLHTTPRequest`:
      - Safari 1.2 or later (tested 1.3 and 3.0)
-     - Camino (tested 1.0.6, 1.6.11, and 2.1.2)
+     - Camino (tested all versions)
      - Firefox (tested 1.0 and later)
      - Probably others!
 
