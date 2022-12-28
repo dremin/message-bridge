@@ -17,6 +17,7 @@ Message Bridge runs on a modern Mac signed into iMessage. Once running, you can 
      - Safari 1.2 or later (tested 1.3 and 3.0)
      - Camino (tested all versions)
      - Firefox (tested 1.0 and later)
+     - Classilla (tested 9.3.4 with NoScript set to allow JavaScript)
      - Probably others!
 
 ## Installation
