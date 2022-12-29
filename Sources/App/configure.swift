@@ -5,6 +5,8 @@ public func configure(_ app: Application) throws {
     // MARK: Middleware
     // serve files from /Public folder
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+    // apply standard headers
+    app.middleware.use(HeaderMiddleware())
     
     // MARK: Init helpers
     let appleScriptHelper = AppleScriptHelper(app)

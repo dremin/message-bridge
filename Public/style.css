@@ -5,11 +5,13 @@ html {
     color: #000;
     background: #fff;
     height: 100%;
+    overflow: hidden;
 }
 
 body {
     margin: 0;
-    font: 13px -apple-system, BlinkMacSystemFont, "Lucida Grande", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 13px;
     height: 100%;
 }
 
@@ -66,13 +68,15 @@ img {
 }
 
 input {
-	font: 13px -apple-system, BlinkMacSystemFont, "Lucida Grande", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-family: -apple-system, BlinkMacSystemFont, "Lucida Grande", "Segoe UI", Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 13px;
 }
 
 /* Chat list */
 #chat-list {
 	height: 100%;
 	float:left;
+    overflow: scroll;
 	overflow-y: scroll;
 	overflow-x: hidden;
 	width:30%;
@@ -90,6 +94,7 @@ input {
 }
 
 .chat-list-item h2 {
+    font-size: 13px;
 	font-weight: bold;
 }
 
@@ -99,6 +104,7 @@ input {
 
 .chat-list-item h3 {
 	font-size: 12px;
+    font-weight: normal;
 	color: #393b3e;
 	padding: 5px 0;
 }
@@ -110,6 +116,7 @@ input {
 .chat-list-item h4 {
 	font-size: 10px;
 	font-style: italic;
+    font-weight: normal;
 	color: #9aaac6;
 }
 
@@ -134,7 +141,9 @@ input {
 	height: 100%;
 	float: left;
 	width: 70%;
+    overflow: scroll;
 	overflow-y: scroll;
+    overflow-x: auto;
 }
 
 #selected-chat form {
