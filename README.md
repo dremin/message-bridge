@@ -9,15 +9,18 @@ A simple solution for accessing iMessage and SMS chats from older computers.
 Message Bridge runs on a modern Mac signed into iMessage. Once running, you can access it via a web browser on older computers.
 
 1. Modern Mac to run Message Bridge:
-   - macOS 10.15 or later (tested on macOS 10.15.7 and macOS 13.1)
+   - macOS 10.15 or later (tested on macOS 10.15.7, 11.7.2, and 13.1)
    - Messages signed into iMessage with at least one existing chat
-2. Accessing Message Bridge on an old machine:
+2. Old machine to access Message Bridge:
    - Connected to the same network as the modern Mac running Message Bridge
-   - Running a web browser that supports `XMLHTTPRequest`:
+   - Running a web browser that supports `XMLHttpRequest`:
      - Safari 1.2 or later (tested 1.3 and 3.0)
      - Camino (tested all versions)
      - Firefox (tested 1.0 and later)
      - Classilla (tested 9.3.4 with NoScript set to allow JavaScript)
+     - RetroZilla (tested 2.2)
+     - Internet Explorer 5.5 or later (tested all versions)
+     - TenFourFox/InterWebPPC
      - Probably others!
 
 ## Installation
