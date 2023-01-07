@@ -132,11 +132,17 @@ h.id as address,
 m.is_from_me,
 m.attributedBody,
 m.text,
-datetime(cmj.message_date/1000000000 + 978307200,'unixepoch','localtime') as received
+datetime(cmj.message_date/1000000000 + 978307200,'unixepoch','localtime') as received,
+group_concat(a.ROWID, '|') as attachment_ids,
+group_concat(a.transfer_name, '|') as attachment_names,
+group_concat(a.mime_type, '|') as attachment_types
 from message as m
 inner join chat_message_join as cmj on cmj.message_id = m.ROWID
 left join handle as h on m.handle_id = h.ROWID
+left join message_attachment_join as maj on maj.message_id = m.ROWID
+left join attachment as a on maj.attachment_id = a.ROWID and a.hide_attachment != 1
 where cmj.chat_id = ?
+group by m.ROWID
 order by cmj.message_date desc
 limit ?
 """, chatId, limit) {
@@ -147,6 +153,9 @@ limit ?
                 let attributedBody = row[4] as? Blob
                 let text = row[5] as? String
                 let received = row[6] as? String
+                let attachmentIds = row[7] as? String
+                let attachmentNames = row[8] as? String
+                let attachmentTypes = row[9] as? String
                 
                 var message = ChatMessage(id: messageId ?? 0, chatId: chatId ?? 0, from: "Unknown", isMe: isMe == 1, body: "", received: received ?? "N/A")
                 
@@ -165,6 +174,26 @@ limit ?
                     message.body = text!
                 }
                 
+                if !(attachmentIds?.isEmpty ?? true) && !(attachmentNames?.isEmpty ?? true) && !(attachmentTypes?.isEmpty ?? true) {
+                    var attachments: [Attachment] = []
+                    
+                    let attachmentIdArr = attachmentIds!.split(separator: "|")
+                    let attachmentNameArr = attachmentNames!.split(separator: "|")
+                    let attachmentTypeArr = attachmentTypes!.split(separator: "|")
+                    
+                    if attachmentNameArr.count >= attachmentIdArr.count && attachmentTypeArr.count >= attachmentIdArr.count {
+                        for attachmentNum in 0..<attachmentIdArr.count {
+                            guard let attachmentId = Int64(attachmentIdArr[attachmentNum]) else {
+                                continue
+                            }
+                            
+                            attachments.append(Attachment(id: attachmentId, filename: String(attachmentNameArr[attachmentNum]), type: String(attachmentTypeArr[attachmentNum])))
+                        }
+                        
+                        message.attachments = attachments
+                    }
+                }
+                
                 messages.append(message)
             }
             
@@ -172,6 +201,37 @@ limit ?
         } catch {
             app.logger.error(Logger.Message(stringLiteral: error.localizedDescription))
             return []
+        }
+    }
+    
+    func getAttachment(attachmentId: Int) -> Attachment? {
+        if db == nil {
+            connect()
+        }
+        
+        guard let messagesDb = db else {
+            app.logger.error("No database connection")
+            return nil
+        }
+        
+        do {
+            for row in try messagesDb.run("""
+select transfer_name, filename, mime_type
+from attachment
+where ROWID = ?
+limit 1
+""", attachmentId) {
+                let filename = row[0] as? String
+                let path = row[1] as? String
+                let type = row[2] as? String
+                
+                return Attachment(id: Int64(attachmentId), filename: filename ?? "Attachment", path: path ?? "Unknown", type: type ?? "Unknown")
+            }
+            
+            return nil
+        } catch {
+            app.logger.error(Logger.Message(stringLiteral: error.localizedDescription))
+            return nil
         }
     }
 }

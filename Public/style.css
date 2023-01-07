@@ -43,13 +43,8 @@ strong {
     font-weight: bold;
 }
 
-a,
 button, select {
     color: inherit;
-}
-
-a {
-    text-decoration: none;
 }
 
 ::-moz-focus-inner {

@@ -10,6 +10,7 @@ function renderActiveChat() {
     for(var i = 0; i < activeChat.messages.length; i++) {
         var cssClass = "message-remote";
         var from = "Myself";
+        var attachmentHtml = "";
         
         if (activeChat.messages[i].isMe === true && activeChat.service == "iMessage") {
             cssClass = "message-me-imessage";
@@ -19,7 +20,24 @@ function renderActiveChat() {
             from = activeChat.messages[i].from;
         }
         
-        var itemHtml = "<div class='" + cssClass + "'><h4>" + from + "</h4><h4 class='message-date'>" + activeChat.messages[i].received + "</h4><p>" + activeChat.messages[i].body + "</p></div>";
+        if (activeChat.messages[i].attachments) {
+            for (var j = 0; j < activeChat.messages[i].attachments.length; j++) {
+                var attachment = activeChat.messages[i].attachments[j];
+                
+                if (attachment.type == "image/gif" ||
+                    attachment.type == "image/jpeg" ||
+                    attachment.type == "image/png" ||
+                    attachment.type == "image/tiff") {
+                    // display images inline
+                    attachmentHtml += "<a href='/attachments/" + attachment.id + "' target='_blank'><img src='/attachments/" + attachment.id + "' alt='" + attachment.filename + "' /></a>";
+                } else {
+                    // display button
+                    attachmentHtml += "<p><a href='/attachments/" + attachment.id + "' target='_blank'>" + attachment.filename + "</a></p>"
+                }
+            }
+        }
+        
+        var itemHtml = "<div class='" + cssClass + "'><h4>" + from + "</h4><h4 class='message-date'>" + activeChat.messages[i].received + "</h4><p>" + activeChat.messages[i].body + "</p>" + attachmentHtml + "</div>";
         messagesHtml = itemHtml + messagesHtml;
     }
     
@@ -52,7 +70,7 @@ function renderChats() {
     var chatListEl = document.getElementById("chat-list");
     var listHtml = "";
     
-    for(var i = 0; i < chats.length; i++) {
+    for (var i = 0; i < chats.length; i++) {
         var cssClass = "chat-list-item";
         if (activeChat && activeChat.id == chats[i].id) {
             cssClass += " chat-list-item-active";

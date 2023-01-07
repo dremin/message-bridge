@@ -15,4 +15,5 @@ struct ChatMessage: Content {
     var isMe: Bool
     var body: String
     var received: String
+    var attachments: [Attachment]?
 }
