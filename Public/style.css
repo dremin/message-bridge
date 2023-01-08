@@ -57,9 +57,10 @@ button, select {
 }
 
 img {
-    max-width: 100%;
+    max-width: 80%;
     height: auto;
     border: 0;
+    max-height: 400px;
 }
 
 input {

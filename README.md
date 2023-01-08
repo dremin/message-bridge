@@ -9,7 +9,7 @@ A simple solution for accessing iMessage and SMS chats from older computers.
 Message Bridge runs on a modern Mac signed into iMessage. Once running, you can access it via a web browser on older computers.
 
 1. Modern Mac to run Message Bridge:
-   - macOS 10.15 or later (tested on macOS 10.15.7, 11.7.2, and 13.1)
+   - macOS 10.15 or later (tested on macOS 10.15.7, 11.7.2, 12.6.2, and 13.1)
    - Messages signed into iMessage with at least one existing chat
 2. Old machine to access Message Bridge:
    - Connected to the same network as the modern Mac running Message Bridge
@@ -17,7 +17,9 @@ Message Bridge runs on a modern Mac signed into iMessage. Once running, you can 
      - Safari 1.2 or later (tested 1.3 and 3.0)
      - Camino (tested all versions)
      - Firefox (tested 1.0 and later)
-     - Classilla (tested 9.3.4 with NoScript set to allow JavaScript)
+     - Classilla (tested 9.3.4)
+       - Configure NoScript to allow JavaScript globally (it doesn't seem to work when only adding to the allow-list)
+       - Scrolling doesn't work quite right in Classilla, but is usable
      - RetroZilla (tested 2.2)
      - Internet Explorer 5.5 or later (tested all versions)
      - TenFourFox/InterWebPPC
@@ -92,6 +94,16 @@ Array of `ChatMessage`:
 - **from** Chat participant who sent the message _(ignore if `isMe` is `true`)_
 - **body** Message body text
 - **lastReceived** Date/time the message was received
+- **attachments** (optional) Array of `Attachment`:
+  - **id** Unique attachment ID, used to request the file
+  - **filename** The attachment filename to display
+  - **type** MIME type of the attachment
+
+### Getting attachments
+
+GET /attachments/{attachmentId}
+
+Responds with the file.
 
 ### Sending messages to a chat
 

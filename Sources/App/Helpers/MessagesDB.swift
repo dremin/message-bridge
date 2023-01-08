@@ -23,7 +23,7 @@ public class MessagesDB {
     
     func connect() {
         do {
-            db = try Connection("\(FileManager.default.homeDirectoryForCurrentUser)Library/Messages/chat.db", readonly: true)
+            db = try Connection("\(FileManager.default.homeDirectoryForCurrentUser.path)/Library/Messages/chat.db", readonly: true)
         } catch {
             app.logger.error(Logger.Message(stringLiteral: error.localizedDescription))
             app.logger.error("Did you enable Full Disk Access for this app in System Settings?")
