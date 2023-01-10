@@ -2,7 +2,7 @@
 
 A simple solution for accessing iMessage and SMS chats from older computers.
 
-![Screenshot](screenshot.png)
+![Screenshot](screenshot.jpg)
 
 ## Requirements
 
