@@ -1,3 +1,8 @@
+var chatsLimit = 20;
+var messagesLimit = 20;
+var inlineImages = true;
+var refreshInterval = 3000;
+
 var activeChat;
 var chats;
 var chatsStr;
@@ -8,15 +13,11 @@ function renderActiveChat() {
     var messagesHtml = "";
     
     for(var i = 0; i < activeChat.messages.length; i++) {
-        var cssClass = "message-remote";
+        var cssClass = "message";
         var from = "Myself";
         var attachmentHtml = "";
         
-        if (activeChat.messages[i].isMe === true && activeChat.service == "iMessage") {
-            cssClass = "message-me-imessage";
-        } else if (activeChat.messages[i].isMe === true) {
-            cssClass = "message-me-sms";
-        } else {
+        if (activeChat.messages[i].isMe == false) {
             from = activeChat.messages[i].from;
         }
         
@@ -24,12 +25,12 @@ function renderActiveChat() {
             for (var j = 0; j < activeChat.messages[i].attachments.length; j++) {
                 var attachment = activeChat.messages[i].attachments[j];
                 
-                if (attachment.type == "image/gif" ||
+                if (inlineImages && (attachment.type == "image/gif" ||
                     attachment.type == "image/jpeg" ||
                     attachment.type == "image/png" ||
-                    attachment.type == "image/tiff") {
+                    attachment.type == "image/tiff")) {
                     // display images inline
-                    attachmentHtml += "<a href='/attachments/" + attachment.id + "' target='_blank'><img src='/attachments/" + attachment.id + "' alt='" + attachment.filename + "' /></a>";
+                    attachmentHtml += "<a href='/attachments/" + attachment.id + "' target='_blank'><img src='/attachments/" + attachment.id + "' alt='" + attachment.filename + "'></a>";
                 } else {
                     // display button
                     attachmentHtml += "<p><a href='/attachments/" + attachment.id + "' target='_blank'>" + attachment.filename + "</a></p>"
@@ -91,19 +92,24 @@ function refresh() {
 }
 
 function loadCallback(status, text) {
-    var newChats = JSON.parse(text);
-    if (text != chatsStr) {
-        chats = newChats;
-        chatsStr = text;
-        renderChats();
+    if (text == chatsStr) {
+        return;
     }
+    
+    chats = JSON.parse(text);
+    chatsStr = text;
+    renderChats();
 }
 
 function load() {
-    xhrExecute("GET", "messages?limit=20", "", loadCallback);
+    xhrExecute("GET", "chats?limit=" + chatsLimit, "", loadCallback);
 }
 
 function loadMessagesCallback(status, text) {
+    if (text == activeChat.messagesStr) {
+        return;
+    }
+    
     var newMessages = JSON.parse(text);
     
     if (newMessages.length > 0 && newMessages[0].chatId != activeChat.id) {
@@ -111,18 +117,17 @@ function loadMessagesCallback(status, text) {
         return;
     }
     
-    if (text != activeChat.messagesStr) {
-        activeChat.messages = newMessages;
-        activeChat.messagesStr = text;
-        renderActiveChat();
-    }
+    activeChat.messages = newMessages;
+    activeChat.messagesStr = text;
+    renderActiveChat();
 }
 
 function loadMessages(chatId) {
-    xhrExecute("GET", "messages/" + chatId + "?limit=20", "", loadMessagesCallback);
+    xhrExecute("GET", "chats/" + chatId + "/messages?limit=" + messagesLimit, "", loadMessagesCallback);
 }
 
 function sendMessageCallback(status, text) {
+    scrollBottom = true;
     loadMessages(activeChat.id);
     document.getElementById("message-input").value = "";
     load();
@@ -135,10 +140,10 @@ function sendMessage(event) {
     
     var body = {
         address: activeChat.replyId,
-        service: activeChat.service,
+        isReply: true,
         message: document.getElementById("message-input").value
     }
-    xhrExecute("POST", "messages", body, sendMessageCallback);
+    xhrExecute("POST", "chats", body, sendMessageCallback);
 }
 
 function xhrExecute(method, endpoint, body, callback) {
@@ -173,4 +178,4 @@ function xhrExecute(method, endpoint, body, callback) {
 }
 
 load();
-setInterval(refresh, 3000);
+setInterval(refresh, refreshInterval);

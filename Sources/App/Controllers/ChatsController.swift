@@ -1,5 +1,5 @@
 //
-//  MessagesController.swift
+//  ChatsController.swift
 //  
 //
 //  Created by Sam Johnson on 12/20/22.
@@ -8,7 +8,7 @@
 import Foundation
 import Vapor
 
-final class MessagesController {
+final class ChatsController {
     
     var appleScriptHelper: AppleScriptHelper
     var db: MessagesDB
@@ -45,8 +45,15 @@ final class MessagesController {
     func sendMessage(req: Request) -> HTTPStatus {
         do {
             let params = try req.content.decode(SendChatRequest.self)
+            var result = false
             
-            if appleScriptHelper.sendMessage(params) {
+            if params.isReply {
+                result = appleScriptHelper.sendMessageReply(params)
+            } else {
+                result = appleScriptHelper.sendMessage(params)
+            }
+            
+            if result {
                 return HTTPStatus.ok
             } else {
                 req.logger.error("Error running AppleScript to send message.")
@@ -60,11 +67,11 @@ final class MessagesController {
     
 }
 
-extension MessagesController: RouteCollection {
+extension ChatsController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         routes.get("", use: getChats)
         
-        routes.get(":chatId", use: getChatMessages)
+        routes.get(":chatId", "messages", use: getChatMessages)
         
         routes.post("", use: sendMessage)
     }

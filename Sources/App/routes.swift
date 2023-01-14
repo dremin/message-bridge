@@ -10,8 +10,8 @@ func routes(_ app: Application, db: MessagesDB, appleScriptHelper: AppleScriptHe
     let attachments = app.grouped("attachments")
     try attachments.register(collection: attachmentsController)
     
-    let messagesController = MessagesController(app, db: db, appleScriptHelper: appleScriptHelper)
-    let messages = app.grouped("messages")
-    try messages.register(collection: messagesController)
+    let chatsController = ChatsController(app, db: db, appleScriptHelper: appleScriptHelper)
+    let chats = app.grouped("chats")
+    try chats.register(collection: chatsController)
     
 }

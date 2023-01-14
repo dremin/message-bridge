@@ -39,7 +39,47 @@ public class MessagesDB {
             return ""
         }
         
-        return (bodyString as! NSAttributedString).string
+        return sanitize(text: (bodyString as! NSAttributedString).string)
+    }
+    
+    func sanitize(text: String) -> String {
+        return text.replacingOccurrences(of: "\u{fffc}", with: "")
+    }
+    
+    func getMessageBody(text: String?, attributedBody: Blob?, itemType: Int64, groupActionType: Int64, shareStatus: Int64) -> String {
+        if text?.isEmpty ?? true {
+            guard let attributedBodyBlob = attributedBody else {
+                switch itemType {
+                case 1:
+                    if groupActionType == 0 {
+                        return "Added a member to the chat"
+                    } else {
+                        return "Removed a member from the chat"
+                    }
+                case 2:
+                    return "Changed the group name"
+                case 3:
+                    if groupActionType == 2 {
+                        return "Removed the group photo"
+                    } else {
+                        return "Changed the group photo"
+                    }
+                case 4:
+                    if shareStatus == 0 {
+                        return "Started sharing location"
+                    } else {
+                        return "Stopped sharing location"
+                    }
+                default:
+                    app.logger.error("Missing both text and attributedBody")
+                    return ""
+                }
+            }
+            
+            return parseAttributedBody(attributedBodyBlob)
+        } else {
+            return sanitize(text: text!)
+        }
     }
     
     func getRecentChats(limit: Int) -> [Chat] {
@@ -61,17 +101,20 @@ group_concat(distinct h.id) as address,
 c.display_name,
 m.attributedBody,
 m.text,
-datetime(cmj.message_date/1000000000 + 978307200,'unixepoch','localtime') as lastReceived,
+datetime(m.date/1000000000 + 978307200,'unixepoch','localtime') as lastReceived,
 c.service_name,
-c.chat_identifier as replyId,
-Max(cmj.message_date)
+c.guid as replyId,
+m.item_type,
+m.group_action_type,
+m.share_status,
+Max(m.date)
 from chat as c
 inner join chat_message_join as cmj on cmj.chat_id = c.ROWID
 inner join message as m on cmj.message_id = m.ROWID
 inner join chat_handle_join as chj on chj.chat_id = c.ROWID
 inner join handle as h on chj.handle_id = h.ROWID
 group by cmj.chat_id
-order by cmj.message_date desc
+order by m.date desc
 limit ?
 """, limit) {
                 let chatId = row[0] as? Int64
@@ -82,6 +125,9 @@ limit ?
                 let lastReceived = row[5] as? String
                 let service = row[6] as? String
                 let replyId = row[7] as? String
+                let itemType = row[8] as? Int64
+                let groupActionType = row[9] as? Int64
+                let shareStatus = row[10] as? Int64
                 
                 var chat = Chat(id: chatId ?? 0, replyId: replyId ?? "", name: "Unknown", lastMessage: "N/A", lastReceived: lastReceived ?? "N/A", service: service ?? "iMessage")
                 
@@ -91,16 +137,7 @@ limit ?
                     chat.name = contactHelper.parseAddress(address!)
                 }
                 
-                if text?.isEmpty ?? true {
-                    guard let attributedBodyBlob = attributedBody else {
-                        app.logger.error("Missing both text and attributedBody")
-                        continue
-                    }
-                    
-                    chat.lastMessage = parseAttributedBody(attributedBodyBlob)
-                } else {
-                    chat.lastMessage = text!
-                }
+                chat.lastMessage = getMessageBody(text: text, attributedBody: attributedBody, itemType: itemType ?? 0, groupActionType: groupActionType ?? 0, shareStatus: shareStatus ?? 0)
                 
                 chats.append(chat)
             }
@@ -132,10 +169,13 @@ h.id as address,
 m.is_from_me,
 m.attributedBody,
 m.text,
-datetime(cmj.message_date/1000000000 + 978307200,'unixepoch','localtime') as received,
+datetime(m.date/1000000000 + 978307200,'unixepoch','localtime') as received,
 group_concat(a.ROWID, '|') as attachment_ids,
 group_concat(a.transfer_name, '|') as attachment_names,
-group_concat(a.mime_type, '|') as attachment_types
+group_concat(a.mime_type, '|') as attachment_types,
+m.item_type,
+m.group_action_type,
+m.share_status
 from message as m
 inner join chat_message_join as cmj on cmj.message_id = m.ROWID
 left join handle as h on m.handle_id = h.ROWID
@@ -143,7 +183,7 @@ left join message_attachment_join as maj on maj.message_id = m.ROWID
 left join attachment as a on maj.attachment_id = a.ROWID and a.hide_attachment != 1
 where cmj.chat_id = ?
 group by m.ROWID
-order by cmj.message_date desc
+order by m.date desc
 limit ?
 """, chatId, limit) {
                 let chatId = row[0] as? Int64
@@ -156,6 +196,9 @@ limit ?
                 let attachmentIds = row[7] as? String
                 let attachmentNames = row[8] as? String
                 let attachmentTypes = row[9] as? String
+                let itemType = row[10] as? Int64
+                let groupActionType = row[11] as? Int64
+                let shareStatus = row[12] as? Int64
                 
                 var message = ChatMessage(id: messageId ?? 0, chatId: chatId ?? 0, from: "Unknown", isMe: isMe == 1, body: "", received: received ?? "N/A")
                 
@@ -163,16 +206,7 @@ limit ?
                     message.from = contactHelper.parseAddress(address!)
                 }
                 
-                if text?.isEmpty ?? true {
-                    guard let attributedBodyBlob = attributedBody else {
-                        app.logger.error("Missing both text and attributedBody")
-                        continue
-                    }
-                    
-                    message.body = parseAttributedBody(attributedBodyBlob)
-                } else {
-                    message.body = text!
-                }
+                message.body = getMessageBody(text: text, attributedBody: attributedBody, itemType: itemType ?? 0, groupActionType: groupActionType ?? 0, shareStatus: shareStatus ?? 0)
                 
                 if !(attachmentIds?.isEmpty ?? true) && !(attachmentNames?.isEmpty ?? true) && !(attachmentTypes?.isEmpty ?? true) {
                     var attachments: [Attachment] = []

@@ -11,7 +11,9 @@ class HeaderMiddleware: Middleware {
     
     func respond(to request: Request, chainingTo next: Responder) -> EventLoopFuture<Response> {
         return next.respond(to: request).map { response in
-            response.headers.add(name: .cacheControl, value: "max-age=0")
+            if response.headers.contentType == .json {
+                response.headers.add(name: .cacheControl, value: "max-age=0")
+            }
             return response
         }
     }

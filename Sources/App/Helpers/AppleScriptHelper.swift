@@ -62,7 +62,7 @@ public class AppleScriptHelper {
             script = """
                 tell application "Messages"
                     set targetBuddy to "\(params.address)"
-                    set targetService to id of 1st account whose service type = \(params.service)
+                    set targetService to id of 1st account whose service type = \(params.service ?? "iMessage")
                     set textMessage to "\(params.message.replacingOccurrences(of: "\"", with: "\\\""))"
                     set theBuddy to participant targetBuddy of account id targetService
                     send textMessage to theBuddy
@@ -72,7 +72,7 @@ public class AppleScriptHelper {
             script = """
                 tell application "Messages"
                     set targetBuddy to "\(params.address)"
-                    set targetService to id of 1st service whose service type = \(params.service)
+                    set targetService to id of 1st service whose service type = \(params.service ?? "iMessage")
                     set textMessage to "\(params.message.replacingOccurrences(of: "\"", with: "\\\""))"
                     set theBuddy to buddy targetBuddy of service id targetService
                     send textMessage to theBuddy
@@ -80,12 +80,33 @@ public class AppleScriptHelper {
                 """
         }
         
-        if (runScript(script)) {
-            return true
+        return runScript(script)
+    }
+    
+    func sendMessageReply(_ params: SendChatRequest) -> Bool {
+        var script: String
+        
+        if #available(macOS 11.0, *) {
+            script = """
+                tell application "Messages"
+                    set targetChat to "\(params.address)"
+                    set textMessage to "\(params.message.replacingOccurrences(of: "\"", with: "\\\""))"
+                    set theChat to a reference to chat id targetChat
+                    send textMessage to theChat
+                end tell
+                """
         } else {
-            app.logger.error("Error running AppleScript to send message.")
-            return false
+            script = """
+                tell application "Messages"
+                    set targetChat to "\(params.address)"
+                    set textMessage to "\(params.message.replacingOccurrences(of: "\"", with: "\\\""))"
+                    set theChat to a reference to text chat id targetChat
+                    send textMessage to theChat
+                end tell
+                """
         }
+        
+        return runScript(script)
     }
     
 }

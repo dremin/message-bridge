@@ -10,7 +10,8 @@ import Vapor
 
 struct SendChatRequest: Content {
     var address: String
-    var service: String
+    var isReply: Bool
+    var service: String? // not required for replies
     var message: String
 }
 

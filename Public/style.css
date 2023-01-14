@@ -147,9 +147,7 @@ input {
 	background: #eee;
 }
 
-.message-me-imessage,
-.message-me-sms,
-.message-remote {
+.message {
 	border-bottom: 1px solid #ddd;
 	padding: 10px;
 }
