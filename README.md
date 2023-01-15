@@ -14,14 +14,16 @@ Message Bridge runs on a modern Mac signed into iMessage. Once running, you can 
 2. Old machine to access Message Bridge:
    - Connected to the same network as the modern Mac running Message Bridge
    - Running a web browser that supports `XMLHttpRequest`:
-     - Safari 1.2 or later (tested 1.3 and 3.0)
+     - Safari 1.3 or later (tested 1.3 and 3.0)
      - Camino (tested all versions)
      - Firefox (tested 1.0 and later)
+     - iCab 3.0.5 or later (tested 3.0.5)
      - Classilla (tested 9.3.4)
        - Configure NoScript to allow JavaScript globally (it doesn't seem to work when only adding to the allow-list)
        - Scrolling doesn't work quite right in Classilla, but is usable
      - RetroZilla (tested 2.2)
      - Internet Explorer 5.5 or later (tested all versions)
+       - Inline images might be large
      - TenFourFox/InterWebPPC
      - Probably others!
 
@@ -57,13 +59,21 @@ Edit the `MessageBridge.command` file in the `MessageBridge` folder, and change 
 
 The `Public` folder within the `MessageBridge` folder contains the web client HTML/CSS/JS, which you may modify to fit your preferences.
 
+#### Adjusting the web client settings for slower machines
+
+If your machine has performance problems rendering the Message Bridge web client, there are a few settings at the very top of `Public/app.js` that you may change to improve performance:
+- **chatsLimit** (default: 20) Number of chats to load in the left pane
+- **messagesLimit** (default: 20) Number of messages to load in the right pane
+- **inlineImages** (default: true) Whether image attachments should be rendered inline or shown as download links
+- **refreshInterval** (default: 3000) How often (in milliseconds) to check for new messages
+
 ## REST API
 
 If you'd like to integrate Message Bridge into your own client, you can use the REST API, which is the same API used by the provided web client.
 
 ### Getting chats
 
-GET /messages
+GET /chats
 
 **Query parameters:**
 - **limit** (default: 5) Controls the number of chats to return.
@@ -80,7 +90,7 @@ Array of `Chat`:
 
 ### Getting chat messages
 
-GET /messages/{chatId}
+GET /chats/{chatId}/messages
 
 **Query parameters:**
 - **limit** (default: 5) Controls the number of chat messages to return.
@@ -107,12 +117,13 @@ Responds with the file.
 
 ### Sending messages to a chat
 
-POST /messages
+POST /chats
 
 **Headers:**
 - **Content-Type:** application/json
 
 **Parameters:**
-- **address** Chat `replyId` retrieved from `GET /messages` (or address of desired recipient for a new chat)
-- **service** Service for the chat, `iMessage` or `SMS`
+- **address** Chat `replyId` retrieved from `GET /chats` (or address of desired recipient for a new chat)
+- **isReply** Boolean indicating if this message is a reply to an existing chat or a new chat
+- **service** Service for the chat, `iMessage` or `SMS`. Only needed if `isReply` is `false`.
 - **message** Message body text
