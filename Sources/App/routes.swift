@@ -14,4 +14,8 @@ func routes(_ app: Application, db: MessagesDB, appleScriptHelper: AppleScriptHe
     let chats = app.grouped("chats")
     try chats.register(collection: chatsController)
     
+    let liteAppController = LiteAppController(app, db: db, appleScriptHelper: appleScriptHelper)
+    let liteApp = app.grouped("lite")
+    try liteApp.register(collection: liteAppController)
+    
 }

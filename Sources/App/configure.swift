@@ -1,4 +1,5 @@
 import Vapor
+import Leaf
 
 // configures your application
 public func configure(_ app: Application) throws {
@@ -7,6 +8,8 @@ public func configure(_ app: Application) throws {
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     // apply standard headers
     app.middleware.use(HeaderMiddleware())
+    // Leaf templating is used for the Lite app
+    app.views.use(.leaf)
     
     // MARK: Init helpers
     let appleScriptHelper = AppleScriptHelper(app)
