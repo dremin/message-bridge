@@ -13,7 +13,7 @@ Message Bridge runs on a modern Mac signed into iMessage. Once running, you can 
    - Messages signed into iMessage with at least one existing chat
 2. Old machine to access Message Bridge:
    - Connected to the same network as the modern Mac running Message Bridge
-   - Running a web browser that supports `XMLHttpRequest`:
+   - The JavaScript-enabled app requires a web browser that supports `XMLHttpRequest`:
      - Safari 1.3 or later (tested 1.3 and 3.0)
      - Camino (tested all versions)
      - Firefox (tested 1.0 and later)
@@ -26,6 +26,7 @@ Message Bridge runs on a modern Mac signed into iMessage. Once running, you can 
        - Inline images might be large
      - TenFourFox/InterWebPPC
      - Probably others!
+   - The "Lite" app works on browsers without JavaScript support, and browsers that don't support `XMLHttpRequest`.
 
 ## Installation
 
@@ -66,6 +67,8 @@ If your machine has performance problems rendering the Message Bridge web client
 - **messagesLimit** (default: 20) Number of messages to load in the right pane
 - **inlineImages** (default: true) Whether image attachments should be rendered inline or shown as download links
 - **refreshInterval** (default: 3000) How often (in milliseconds) to check for new messages
+
+The "lite" app, available at `/lite`, can be used instead if performance is still problematic.
 
 ## REST API
 

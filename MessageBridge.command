@@ -14,6 +14,7 @@ If you have already done this, you can ignore this message!
 
 
 To access Message Bridge, open a browser to: http://$(ipconfig getifaddr en0):$(echo $MBPORT)
+For browsers without JavaScript support use: http://$(ipconfig getifaddr en0):$(echo $MBPORT)/lite
 
 
 "
