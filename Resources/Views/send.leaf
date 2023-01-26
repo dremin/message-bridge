@@ -2,10 +2,10 @@
 <html lang="en">
     <head>
         <title>Message Sent</title>
-        <meta http-equiv="refresh" content="5;url=/lite/#(chatId)" />
+        <meta http-equiv="refresh" content="5;url=/lite/#(chatId)?rand=#(rand)" />
     </head>
     <body>
         <h1>Message Sent</h1>
-        <p>If you are not redirected within 5 seconds, <a href="/lite/#(chatId)">click here</a>.
+        <p>If you are not redirected within 5 seconds, <a href="/lite/#(chatId)?rand=#(rand)">click here</a>.
     </body>
 </html>

@@ -57,7 +57,7 @@ final class LiteAppController {
             let result = appleScriptHelper.sendMessageReply(sendChatReq)
             
             if result {
-                return req.view.render("send", ["chatId": params.chatId])
+                return req.view.render("send", ["chatId": params.chatId, "rand": Int.random(in: 1..<1000)])
             } else {
                 req.logger.error("Error running AppleScript to send message.")
             }
