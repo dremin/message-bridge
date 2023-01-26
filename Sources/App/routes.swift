@@ -2,10 +2,6 @@ import Vapor
 
 func routes(_ app: Application, db: MessagesDB, appleScriptHelper: AppleScriptHelper) throws {
     
-    app.get { req -> EventLoopFuture<View> in
-        return req.view.render(app.directory.publicDirectory + "index.html")
-    }
-    
     let attachmentsController = AttachmentsController(app, db: db)
     let attachments = app.grouped("attachments")
     try attachments.register(collection: attachmentsController)
@@ -17,9 +13,5 @@ func routes(_ app: Application, db: MessagesDB, appleScriptHelper: AppleScriptHe
     let liteAppController = LiteAppController(app, db: db, appleScriptHelper: appleScriptHelper)
     let liteApp = app.grouped("lite")
     try liteApp.register(collection: liteAppController)
-    
-    let standardAppController = StandardAppController(app)
-    let standardApp = app.grouped("")
-    try standardApp.register(collection: standardAppController)
     
 }

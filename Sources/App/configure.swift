@@ -5,7 +5,7 @@ import Leaf
 public func configure(_ app: Application) throws {
     // MARK: Middleware
     // serve files from /Public folder
-    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
+    app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory, defaultFile: "index.html"))
     // apply standard headers
     app.middleware.use(HeaderMiddleware())
     // Leaf templating is used for the Lite app
