@@ -23,9 +23,12 @@ mkdir -p "${ZIPROOT}/bin"
 cp -R "${ARCHIVE}/Products/usr/local/bin/${PRODUCT}" "${ZIPROOT}/bin/"
 cp "${PRODUCT}.command" "${ZIPROOT}/"
 cp -R "Public/" "${ZIPROOT}/Public"
+cp -R "Resources/" "${ZIPROOT}/Resources"
 
 # Remove macOS junk
 rm "${ZIPROOT}/Public/.DS_Store"
+rm "${ZIPROOT}/Resources/.DS_Store"
+rm "${ZIPROOT}/Resources/Views/.DS_Store"
 
 # Remove any existing signature from the app
 codesign --remove-signature "${APP}"

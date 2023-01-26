@@ -18,4 +18,8 @@ func routes(_ app: Application, db: MessagesDB, appleScriptHelper: AppleScriptHe
     let liteApp = app.grouped("lite")
     try liteApp.register(collection: liteAppController)
     
+    let standardAppController = StandardAppController(app)
+    let standardApp = app.grouped("")
+    try standardApp.register(collection: standardAppController)
+    
 }
