@@ -1,0 +1,15 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html lang="en">
+    <head>
+        <title>Chats</title>
+    </head>
+    <body>
+        <h1>Chats</h1>
+#for(chat in chats):
+        <a href="/lite/#(chat.id)"><b>#(chat.name)</b></a><br>
+        <em>Last message:</em> #(chat.lastMessage)<br>
+        <em>Received:</em> #(chat.lastReceived)<br>
+        <hr>
+#endfor
+    </body>
+</html>

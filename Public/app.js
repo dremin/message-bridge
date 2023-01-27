@@ -160,7 +160,7 @@ function xhrExecute(method, endpoint, body, callback) {
                 xhr = new ActiveXObject("Microsoft.XMLHTTP");
             } catch (ex) {
                 // XMLHttpRequest not supported
-                alert("Sorry! This browser cannot load Message Bridge :(");
+                window.location.replace("/lite");
             }
         }
     }

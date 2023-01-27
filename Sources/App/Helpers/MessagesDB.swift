@@ -82,6 +82,32 @@ public class MessagesDB {
         }
     }
     
+    func parseChat(row: Statement.Element) -> Chat {
+        let chatId = row[0] as? Int64
+        let address = row[1] as? String
+        let displayName = row[2] as? String
+        let attributedBody = row[3] as? Blob
+        let text = row[4] as? String
+        let lastReceived = row[5] as? String
+        let service = row[6] as? String
+        let replyId = row[7] as? String
+        let itemType = row[8] as? Int64
+        let groupActionType = row[9] as? Int64
+        let shareStatus = row[10] as? Int64
+        
+        var chat = Chat(id: chatId ?? 0, replyId: replyId ?? "", name: "Unknown", lastMessage: "N/A", lastReceived: lastReceived ?? "N/A", service: service ?? "iMessage")
+        
+        if !(displayName?.isEmpty ?? true) {
+            chat.name = displayName!
+        } else if !(address?.isEmpty ?? true) {
+            chat.name = contactHelper.parseAddress(address!)
+        }
+        
+        chat.lastMessage = getMessageBody(text: text, attributedBody: attributedBody, itemType: itemType ?? 0, groupActionType: groupActionType ?? 0, shareStatus: shareStatus ?? 0)
+        
+        return chat
+    }
+    
     func getRecentChats(limit: Int) -> [Chat] {
         if db == nil {
             connect()
@@ -117,35 +143,61 @@ group by cmj.chat_id
 order by m.date desc
 limit ?
 """, limit) {
-                let chatId = row[0] as? Int64
-                let address = row[1] as? String
-                let displayName = row[2] as? String
-                let attributedBody = row[3] as? Blob
-                let text = row[4] as? String
-                let lastReceived = row[5] as? String
-                let service = row[6] as? String
-                let replyId = row[7] as? String
-                let itemType = row[8] as? Int64
-                let groupActionType = row[9] as? Int64
-                let shareStatus = row[10] as? Int64
-                
-                var chat = Chat(id: chatId ?? 0, replyId: replyId ?? "", name: "Unknown", lastMessage: "N/A", lastReceived: lastReceived ?? "N/A", service: service ?? "iMessage")
-                
-                if !(displayName?.isEmpty ?? true) {
-                    chat.name = displayName!
-                } else if !(address?.isEmpty ?? true) {
-                    chat.name = contactHelper.parseAddress(address!)
-                }
-                
-                chat.lastMessage = getMessageBody(text: text, attributedBody: attributedBody, itemType: itemType ?? 0, groupActionType: groupActionType ?? 0, shareStatus: shareStatus ?? 0)
-                
-                chats.append(chat)
+                chats.append(parseChat(row: row))
             }
             
             return chats
         } catch {
             app.logger.error(Logger.Message(stringLiteral: error.localizedDescription))
             return []
+        }
+    }
+    
+    func getChat(chatId: Int) -> Chat? {
+        if db == nil {
+            connect()
+        }
+        
+        guard let messagesDb = db else {
+            app.logger.error("No database connection")
+            return nil
+        }
+        
+        do {
+            var chats: [Chat] = []
+            
+            for row in try messagesDb.run("""
+select cmj.chat_id,
+group_concat(distinct h.id) as address,
+c.display_name,
+m.attributedBody,
+m.text,
+datetime(m.date/1000000000 + 978307200,'unixepoch','localtime') as lastReceived,
+c.service_name,
+c.guid as replyId,
+m.item_type,
+m.group_action_type,
+m.share_status,
+Max(m.date)
+from chat as c
+inner join chat_message_join as cmj on cmj.chat_id = c.ROWID
+inner join message as m on cmj.message_id = m.ROWID
+inner join chat_handle_join as chj on chj.chat_id = c.ROWID
+inner join handle as h on chj.handle_id = h.ROWID
+group by cmj.chat_id
+having cmj.chat_id = ?
+""", chatId) {
+                chats.append(parseChat(row: row))
+            }
+            
+            if chats.count > 0 {
+                return chats[0]
+            }
+            
+            return nil
+        } catch {
+            app.logger.error(Logger.Message(stringLiteral: error.localizedDescription))
+            return nil
         }
     }
     
