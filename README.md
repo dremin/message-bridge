@@ -2,7 +2,10 @@
 
 A simple solution for accessing iMessage and SMS chats from older computers.
 
-![Screenshot](screenshot.jpg)
+![Message Bridge screenshot](screenshot.jpg)
+<p align="center">
+  <img src="https://github.com/dremin/message-bridge/raw/main/screenshot2.jpg" alt="Message Bridge lite screenshot">
+</p>
 
 ## Requirements
 
