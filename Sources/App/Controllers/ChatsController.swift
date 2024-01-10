@@ -49,6 +49,21 @@ final class ChatsController {
             
             if params.isReply {
                 result = appleScriptHelper.sendMessageReply(params)
+                
+                if !result {
+                    // fall back to sending as a new chat
+                    // we need to extract the service from the reply address
+                    let splitAddress = params.address.split(separator: ";")
+                    if splitAddress.count > 1 {
+                        let newParams = SendChatRequest(
+                            address: String(splitAddress[splitAddress.count - 1]),
+                            isReply: false,
+                            service: String(splitAddress[0]),
+                            message: params.message)
+                        result = appleScriptHelper.sendMessage(newParams)
+                        req.logger.info("Sent reply as a new chat due to a Messages error.")
+                    }
+                }
             } else {
                 result = appleScriptHelper.sendMessage(params)
             }
