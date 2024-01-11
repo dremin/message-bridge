@@ -18,6 +18,16 @@ final class ChatsController {
         self.appleScriptHelper = appleScriptHelper
     }
     
+    func getLatestChat(req: Request) throws -> Int64 {
+        let chats = db.getRecentChats(limit: 1)
+        
+        if chats.count == 1 {
+            return chats[0].lastMessageId
+        }
+        
+        return 0
+    }
+    
     func getChats(req: Request) throws -> [Chat] {
         do {
             let params = try req.query.decode(ListChatRequest.self)
@@ -35,7 +45,7 @@ final class ChatsController {
                 throw Abort(.badRequest)
             }
             let params = try req.query.decode(ListChatRequest.self)
-            return db.getChatMessages(chatId: chatId, limit: params.limit ?? 5)
+            return db.getChatMessages(chatId: chatId, limit: params.limit ?? 5, format: params.format ?? false)
         } catch {
             req.logger.error(Logger.Message(stringLiteral: error.localizedDescription))
             throw Abort(.badRequest)
@@ -85,6 +95,7 @@ final class ChatsController {
 extension ChatsController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         routes.get("", use: getChats)
+        routes.get("latest", use: getLatestChat)
         
         routes.get(":chatId", "messages", use: getChatMessages)
         

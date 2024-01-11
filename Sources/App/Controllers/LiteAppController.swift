@@ -43,7 +43,7 @@ final class LiteAppController {
                 throw Abort(.badRequest)
             }
             
-            return req.view.render("messages", LiteMessagesContext(chat: chat, messages: db.getChatMessages(chatId: chatId, limit: params.limit ?? defaultLimit)))
+            return req.view.render("messages", LiteMessagesContext(chat: chat, messages: db.getChatMessages(chatId: chatId, limit: params.limit ?? defaultLimit, format: false)))
         } catch {
             req.logger.error(Logger.Message(stringLiteral: error.localizedDescription))
             throw Abort(.badRequest)

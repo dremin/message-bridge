@@ -30,7 +30,7 @@ public class MessagesDB {
         }
     }
     
-    func parseAttributedBody(_ attributedBody: Blob) -> String {
+    func parseAttributedBody(_ attributedBody: Blob, format: Bool) -> String {
         let bodyUnarchiver = NSUnarchiver(forReadingWith: Data.fromDatatypeValue(attributedBody))
         let bodyObject = bodyUnarchiver?.decodeObject()
         
@@ -39,14 +39,25 @@ public class MessagesDB {
             return ""
         }
         
-        return sanitize(text: (bodyString as! NSAttributedString).string)
+        return sanitize(text: (bodyString as! NSAttributedString).string, format: format)
     }
     
-    func sanitize(text: String) -> String {
-        return text.replacingOccurrences(of: "\u{fffc}", with: "")
+    func sanitize(text: String, format: Bool) -> String {
+        let sanitizedText = text.replacingOccurrences(of: "\u{fffc}", with: "")
+        
+        if !format {
+            return sanitizedText
+        }
+        
+        do {
+            let regex = try NSRegularExpression(pattern: "(http|ftp|https):\\/\\/([\\w_-]+(?:(?:\\.[\\w_-]+)+))([\\w.,@?^=%&:\\/~+#-]*[\\w@?^=%&\\/~+#-])")
+            return regex.stringByReplacingMatches(in: sanitizedText, range: NSMakeRange(0, sanitizedText.count), withTemplate: "<a href=\"$0\" target=\"_blank\">$0</a>")
+        } catch {
+            return sanitizedText
+        }
     }
     
-    func getMessageBody(text: String?, attributedBody: Blob?, itemType: Int64, groupActionType: Int64, shareStatus: Int64) -> String {
+    func getMessageBody(text: String?, attributedBody: Blob?, itemType: Int64, groupActionType: Int64, shareStatus: Int64, format: Bool) -> String {
         if text?.isEmpty ?? true {
             guard let attributedBodyBlob = attributedBody else {
                 switch itemType {
@@ -76,13 +87,13 @@ public class MessagesDB {
                 }
             }
             
-            return parseAttributedBody(attributedBodyBlob)
+            return parseAttributedBody(attributedBodyBlob, format: format)
         } else {
-            return sanitize(text: text!)
+            return sanitize(text: text!, format: format)
         }
     }
     
-    func parseChat(row: Statement.Element) -> Chat {
+    func parseChat(row: Statement.Element, format: Bool) -> Chat {
         let chatId = row[0] as? Int64
         let address = row[1] as? String
         let displayName = row[2] as? String
@@ -94,8 +105,9 @@ public class MessagesDB {
         let itemType = row[8] as? Int64
         let groupActionType = row[9] as? Int64
         let shareStatus = row[10] as? Int64
+        let messageId = row[11] as? Int64
         
-        var chat = Chat(id: chatId ?? 0, replyId: replyId ?? "", name: "Unknown", lastMessage: "N/A", lastReceived: lastReceived ?? "N/A", service: service ?? "iMessage")
+        var chat = Chat(id: chatId ?? 0, replyId: replyId ?? "", name: "Unknown", lastMessage: "N/A", lastMessageId: messageId ?? 0, lastReceived: lastReceived ?? "N/A", service: service ?? "iMessage")
         
         if !(displayName?.isEmpty ?? true) {
             chat.name = displayName!
@@ -103,7 +115,7 @@ public class MessagesDB {
             chat.name = contactHelper.parseAddress(address!)
         }
         
-        chat.lastMessage = getMessageBody(text: text, attributedBody: attributedBody, itemType: itemType ?? 0, groupActionType: groupActionType ?? 0, shareStatus: shareStatus ?? 0)
+        chat.lastMessage = getMessageBody(text: text, attributedBody: attributedBody, itemType: itemType ?? 0, groupActionType: groupActionType ?? 0, shareStatus: shareStatus ?? 0, format: format)
         
         return chat
     }
@@ -133,6 +145,7 @@ c.guid as replyId,
 m.item_type,
 m.group_action_type,
 m.share_status,
+cmj.message_id,
 Max(m.date)
 from chat as c
 inner join chat_message_join as cmj on cmj.chat_id = c.ROWID
@@ -143,7 +156,7 @@ group by cmj.chat_id
 order by m.date desc
 limit ?
 """, limit) {
-                chats.append(parseChat(row: row))
+                chats.append(parseChat(row: row, format: false))
             }
             
             return chats
@@ -187,7 +200,7 @@ inner join handle as h on chj.handle_id = h.ROWID
 group by cmj.chat_id
 having cmj.chat_id = ?
 """, chatId) {
-                chats.append(parseChat(row: row))
+                chats.append(parseChat(row: row, format: false))
             }
             
             if chats.count > 0 {
@@ -201,7 +214,7 @@ having cmj.chat_id = ?
         }
     }
     
-    func getChatMessages(chatId: Int, limit: Int) -> [ChatMessage] {
+    func getChatMessages(chatId: Int, limit: Int, format: Bool) -> [ChatMessage] {
         if db == nil {
             connect()
         }
@@ -258,7 +271,7 @@ limit ?
                     message.from = contactHelper.parseAddress(address!)
                 }
                 
-                message.body = getMessageBody(text: text, attributedBody: attributedBody, itemType: itemType ?? 0, groupActionType: groupActionType ?? 0, shareStatus: shareStatus ?? 0)
+                message.body = getMessageBody(text: text, attributedBody: attributedBody, itemType: itemType ?? 0, groupActionType: groupActionType ?? 0, shareStatus: shareStatus ?? 0, format: format)
                 
                 if !(attachmentIds?.isEmpty ?? true) && !(attachmentNames?.isEmpty ?? true) && !(attachmentTypes?.isEmpty ?? true) {
                     var attachments: [Attachment] = []

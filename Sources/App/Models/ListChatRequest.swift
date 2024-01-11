@@ -10,6 +10,7 @@ import Vapor
 
 struct ListChatRequest: Content {
     var limit: Int?
+    var format: Bool?
 }
 
 // TODO: Add validator

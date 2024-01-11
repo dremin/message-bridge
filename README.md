@@ -95,6 +95,7 @@ Array of `Chat`:
 - **replyId** Unique chat reply ID, used when sending a message to a chat
 - **name** Display name for the chat (group name or recipient name)
 - **lastMessage** Latest message received for the chat
+- **lastMessageId** ID of the latest message received for the chat
 - **lastReceived** Date/time the latest message was received
 - **service** Service for the chat, `iMessage` or `SMS`
 
@@ -103,6 +104,7 @@ Array of `Chat`:
 GET /chats/{chatId}/messages
 
 **Query parameters:**
+- **format** (default: false) Determines whether messages include HTML formatting for links.
 - **limit** (default: 5) Controls the number of chat messages to return.
 
 #### Response
@@ -118,6 +120,16 @@ Array of `ChatMessage`:
   - **id** Unique attachment ID, used to request the file
   - **filename** The attachment filename to display
   - **type** MIME type of the attachment
+
+### Getting the latest chat message ID
+
+GET /chats/latest
+
+This is useful for checking for new messages from a client without needing to parse large responses.
+
+#### Response
+
+Unique message ID
 
 ### Getting attachments
 

@@ -5,7 +5,7 @@ var refreshInterval = 3000;
 
 var activeChat;
 var chats;
-var chatsStr;
+var latestId;
 var scrollBottom = false;
 
 function renderActiveChat() {
@@ -53,9 +53,6 @@ function renderActiveChat() {
 
 function setActiveChat(index) {
     activeChat = chats[index];
-    if (activeChat) {
-        activeChat.messagesStr = "";
-    }
     scrollBottom = true;
     renderChats();
     loadMessages(activeChat.id);
@@ -83,33 +80,21 @@ function renderChats() {
     chatListEl.innerHTML = listHtml;
 }
 
-function refresh() {
-    load();
-    
-    if (activeChat) {
-        loadMessages(activeChat.id);
-    }
-}
-
-function loadCallback(status, text) {
-    if (text == chatsStr) {
-        return;
-    }
-    
+function loadChatsCallback(status, text) {
     chats = JSON.parse(text);
-    chatsStr = text;
+    
+    if (chats.length > 0) {
+        latestId = chats[0].lastMessageId;
+    }
+    
     renderChats();
 }
 
-function load() {
-    xhrExecute("GET", "chats?limit=" + chatsLimit, "", loadCallback);
+function loadChats() {
+    xhrExecute("GET", "chats?limit=" + chatsLimit, "", loadChatsCallback);
 }
 
 function loadMessagesCallback(status, text) {
-    if (text == activeChat.messagesStr) {
-        return;
-    }
-    
     var newMessages = JSON.parse(text);
     
     if (newMessages.length > 0 && newMessages[0].chatId != activeChat.id) {
@@ -118,19 +103,35 @@ function loadMessagesCallback(status, text) {
     }
     
     activeChat.messages = newMessages;
-    activeChat.messagesStr = text;
     renderActiveChat();
 }
 
 function loadMessages(chatId) {
-    xhrExecute("GET", "chats/" + chatId + "/messages?limit=" + messagesLimit, "", loadMessagesCallback);
+    xhrExecute("GET", "chats/" + chatId + "/messages?format=true&limit=" + messagesLimit, "", loadMessagesCallback);
+}
+
+function loadLatestCallback(status, text) {
+    if (text == latestId) {
+        return;
+    }
+    
+    latestId = text;
+    loadChats();
+    
+    if (activeChat) {
+        loadMessages(activeChat.id);
+    }
+}
+
+function loadLatest() {
+    xhrExecute("GET", "chats/latest", "", loadLatestCallback);
 }
 
 function sendMessageCallback(status, text) {
     scrollBottom = true;
     loadMessages(activeChat.id);
     document.getElementById("message-input").value = "";
-    load();
+    loadChats();
 }
 
 function sendMessage(event) {
@@ -177,5 +178,5 @@ function xhrExecute(method, endpoint, body, callback) {
     xhr.send(JSON.stringify(body));
 }
 
-load();
-setInterval(refresh, refreshInterval);
+loadChats();
+setInterval(loadLatest, refreshInterval);

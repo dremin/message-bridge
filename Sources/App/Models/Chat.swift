@@ -13,6 +13,7 @@ struct Chat: Content {
     var replyId: String
     var name: String
     var lastMessage: String
+    var lastMessageId: Int64
     var lastReceived: String
     var service: String
 }
