@@ -19,13 +19,7 @@ final class ChatsController {
     }
     
     func getLatestChat(req: Request) throws -> Int64 {
-        let chats = db.getRecentChats(limit: 1)
-        
-        if chats.count == 1 {
-            return chats[0].lastMessageId
-        }
-        
-        return 0
+        return db.getLatestMessageId()
     }
     
     func getChats(req: Request) throws -> [Chat] {

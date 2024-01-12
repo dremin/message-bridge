@@ -12,7 +12,7 @@ A simple solution for accessing iMessage and SMS chats from older computers.
 Message Bridge runs on a modern Mac signed into iMessage. Once running, you can access it via a web browser on older computers.
 
 1. Modern Mac to run Message Bridge:
-   - macOS 10.15 or later (tested on macOS 10.15.7, 11.7.2, 12.6.2, and 13.1)
+   - macOS 10.15 or later (tested on macOS 10.15.7, 11.7.2, 12.6.2, 13.1, and 14.2.1)
    - Messages signed into iMessage with at least one existing chat
 2. Old machine to access Message Bridge:
    - Connected to the same network as the modern Mac running Message Bridge
@@ -26,7 +26,6 @@ Message Bridge runs on a modern Mac signed into iMessage. Once running, you can 
        - Scrolling doesn't work quite right in Classilla, but is usable
      - RetroZilla (tested 2.2)
      - Internet Explorer 5.5 or later (tested all versions)
-       - Inline images might be large
      - TenFourFox/InterWebPPC
      - Probably others!
    - The "lite" client works on browsers without JavaScript support, and browsers that don't support `XMLHttpRequest`.
@@ -68,7 +67,8 @@ The `Public` folder within the `MessageBridge` folder contains the standard web 
 If your machine has performance problems rendering the standard Message Bridge web client, there are a few settings at the very top of `Public/app.js` that you may change to improve performance:
 - **chatsLimit** (default: 20) Number of chats to load in the left pane
 - **messagesLimit** (default: 20) Number of messages to load in the right pane
-- **inlineImages** (default: true) Whether image attachments should be rendered inline or shown as download links. Due to the large size of modern digital photo files, disabling this setting can make a substantial performance improvement on slower machines and browsers.
+- **inlineImages** (default: true) Whether image attachments should be rendered inline or shown as download links
+- **inlineImageMaxSize** (default: 300) The maximum dimension of an inline image thumbnail
 - **refreshInterval** (default: 3000) How often (in milliseconds) to check for new messages
 
 #### Using the "lite" Message Bridge client
@@ -129,15 +129,28 @@ This is useful for checking for new messages from a client without needing to pa
 
 #### Response
 
-Unique message ID
+Unique message ID. Note that this ID may be different from the most recent `latestMessageId` from `GET /chats` if a message from the past arrived late.
 
-### Getting attachments
+### Getting an attachment
 
 GET /attachments/{attachmentId}
 
+#### Response
+
 Responds with the file.
 
-### Sending messages to a chat
+### Getting an attachment thumbnail
+
+GET /attachments/{attachmentId}/thumb
+
+**Query parameters:**
+- **maxSize** (default: 300) The maximum dimension of the thumbnail
+
+#### Response
+
+Responds with the image thumbnail if the attachment is an image.
+
+### Sending a message to a chat
 
 POST /chats
 

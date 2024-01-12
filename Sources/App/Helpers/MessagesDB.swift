@@ -120,6 +120,29 @@ public class MessagesDB {
         return chat
     }
     
+    func getLatestMessageId() -> Int64 {
+        if db == nil {
+            connect()
+        }
+        
+        guard let messagesDb = db else {
+            app.logger.error("No database connection")
+            return 0
+        }
+        
+        do {
+            for row in try messagesDb.run("select Max(message_id) from chat_message_join") {
+                return row[0] as? Int64 ?? 0
+            }
+            
+            app.logger.info("No messages to return")
+            return 0
+        } catch {
+            app.logger.error(Logger.Message(stringLiteral: error.localizedDescription))
+            return 0
+        }
+    }
+    
     func getRecentChats(limit: Int) -> [Chat] {
         if db == nil {
             connect()
