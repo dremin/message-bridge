@@ -95,6 +95,10 @@ final class AttachmentsController {
             let res = Response()
             res.body = .init(data: imageData as Data)
             
+            if params.download == true {
+                res.headers.add(name: .contentDisposition, value: "attachment; filename=\"\(attachmentId).jpg\"")
+            }
+            
             return res
         } catch {
             req.logger.error(Logger.Message(stringLiteral: error.localizedDescription))
