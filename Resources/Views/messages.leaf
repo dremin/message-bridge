@@ -25,7 +25,11 @@
         <p>#(message.body)</p>
     #if(message.attachments):
         #for(attachment in message.attachments):
-        <a href="/attachments/#(attachment.id)">#(attachment.filename)</a><br>
+            #if(attachment.type == "image/jpeg" || attachment.type == "image/png" || attachment.type == "image/tiff" || attachment.type == "image/heic"):
+                <a href="/attachments/#(attachment.id)/thumb?download=true&amp;maxSize=500">#(attachment.filename)</a><br>
+            #else:
+                <a href="/attachments/#(attachment.id)">#(attachment.filename)</a><br>
+            #endif
         #endfor
     #endif
 #endfor
