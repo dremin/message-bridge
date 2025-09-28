@@ -47,7 +47,7 @@ function renderActiveChat() {
                 } else {
                     // display button
                     var attachmentUrl = "/attachments/" + attachment.id;
-                    if (downloadScaledImages && isImage) {
+                    if (downloadScaledImages && isImage && attachment.type != "image/gif") {
                         attachmentUrl = "/attachments/" + attachment.id + "/thumb?download=true&maxSize=" + downloadImageMaxSize;
                     }
                     attachmentHtml += "<p><a href='" + attachmentUrl + "' target='_blank'>" + attachment.filename + "</a></p>"
