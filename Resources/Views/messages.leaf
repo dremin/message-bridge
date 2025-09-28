@@ -4,8 +4,7 @@
         <title>#(chat.name) - Messages</title>
     </head>
     <body>
-        <h1>#(chat.name)</h1>
-        <a href="/lite"><b>&lt; Back to chats list</b></a><br><br>
+        <h1><a href="/lite">Chats</a> / #(chat.name)</h1>
         <b>Send message:</b>
         <form action="/lite" method="post">
             <input type="text" name="message" size="40" autocomplete="off">
