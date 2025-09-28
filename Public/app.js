@@ -2,12 +2,13 @@ var chatsLimit = 20;
 var messagesLimit = 20;
 var inlineImages = true;
 var inlineImageMaxSize = 300;
+var downloadScaledImages = true;
+var downloadImageMaxSize = 1500;
 var refreshInterval = 3000;
 
 var activeChat;
 var chats;
 var latestId;
-var scrollBottom = false;
 
 function renderActiveChat() {
     var chatMessagesEl = document.getElementById("chat-messages");
@@ -25,24 +26,31 @@ function renderActiveChat() {
         if (activeChat.messages[i].attachments) {
             for (var j = 0; j < activeChat.messages[i].attachments.length; j++) {
                 var attachment = activeChat.messages[i].attachments[j];
+                var isImage = attachment.type == "image/gif" ||
+                              attachment.type == "image/jpeg" ||
+                              attachment.type == "image/png" ||
+                              attachment.type == "image/tiff" ||
+                              attachment.type == "image/heic";
                 
-                if (inlineImages && (attachment.type == "image/gif" ||
-                    attachment.type == "image/jpeg" ||
-                    attachment.type == "image/png" ||
-                    attachment.type == "image/tiff" ||
-                    attachment.type == "image/heic")) {
-                    // display images inline
-                    attachmentHtml += "<a href='/attachments/" + attachment.id + "' target='_blank'><img src='/attachments/" + attachment.id;
-                    
-                    if (attachment.type != "image/gif") {
+                if (inlineImages && isImage) {
+                    var attachmentUrl = "/attachments/" + attachment.id + "/thumb?download=true&maxSize=" + downloadImageMaxSize;
+                    var attachmentImg = "/attachments/" + attachment.id + "/thumb?maxSize=" + inlineImageMaxSize;
+                    if (attachment.type == "image/gif") {
                         // show thumbnails only for non-gifs: gifs are animated and usually smaller dimensions
-                        attachmentHtml += "/thumb?maxSize=" + inlineImageMaxSize;
+                        attachmentUrl = "/attachments/" + attachment.id;
+                        attachmentImg = "/attachments/" + attachment.id;
+                    } else if (!downloadScaledImages) {
+                        attachmentUrl = "/attachments/" + attachment.id;
                     }
-                    
-                    attachmentHtml += "' alt='" + attachment.filename + "'></a>";
+                    // display images inline
+                    attachmentHtml += "<a href='" + attachmentUrl + "' target='_blank'><img src='" + attachmentImg + "' alt='" + attachment.filename + "'></a>";
                 } else {
                     // display button
-                    attachmentHtml += "<p><a href='/attachments/" + attachment.id + "' target='_blank'>" + attachment.filename + "</a></p>"
+                    var attachmentUrl = "/attachments/" + attachment.id;
+                    if (downloadScaledImages && isImage) {
+                        attachmentUrl = "/attachments/" + attachment.id + "/thumb?download=true&maxSize=" + downloadImageMaxSize;
+                    }
+                    attachmentHtml += "<p><a href='" + attachmentUrl + "' target='_blank'>" + attachment.filename + "</a></p>"
                 }
             }
         }
@@ -50,19 +58,15 @@ function renderActiveChat() {
         var itemHtml = "<div class='" + cssClass + "'><h4>" + from + "</h4><h4 class='message-date'>" + activeChat.messages[i].received + "</h4><p>" + activeChat.messages[i].body + "</p>" + attachmentHtml + "</div>";
         messagesHtml = itemHtml + messagesHtml;
     }
-    
     chatMessagesEl.innerHTML = messagesHtml;
     
-    if (scrollBottom) {
-        var chatMessagesEl = document.getElementById("selected-chat");
-        chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
-        scrollBottom = false;
-    }
+    // Scroll to the bottom
+    var chatMessagesEl = document.getElementById("selected-chat");
+    chatMessagesEl.scrollTop = chatMessagesEl.scrollHeight;
 }
 
 function setActiveChat(index) {
     activeChat = chats[index];
-    scrollBottom = true;
     renderChats();
     loadMessages(activeChat.id);
     
@@ -133,13 +137,14 @@ function loadLatestCallback(status, text) {
 }
 
 function loadLatest() {
-    xhrExecute("GET", "chats/latest", "", loadLatestCallback);
+    // Add random number to query string to bust IE cache
+    xhrExecute("GET", "chats/latest?rand=" + Math.floor(Math.random() * 10000), "", loadLatestCallback);
 }
 
 function sendMessageCallback(status, text) {
-    scrollBottom = true;
     loadMessages(activeChat.id);
     document.getElementById("message-input").value = "";
+    document.getElementById("message-send").disabled = false;
     loadChats();
 }
 
@@ -153,6 +158,7 @@ function sendMessage(event) {
         isReply: true,
         message: document.getElementById("message-input").value
     }
+    document.getElementById("message-send").disabled = true;
     xhrExecute("POST", "chats", body, sendMessageCallback);
 }
 
@@ -171,6 +177,7 @@ function xhrExecute(method, endpoint, body, callback) {
             } catch (ex) {
                 // XMLHttpRequest not supported
                 window.location.replace("/lite");
+                return;
             }
         }
     }
