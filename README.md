@@ -4,7 +4,7 @@ A simple solution for accessing iMessage and SMS chats from older computers.
 
 ![Message Bridge screenshot](screenshot.jpg)
 <p align="center">
-  <img src="https://github.com/dremin/message-bridge/raw/main/screenshot2.jpg" alt="Message Bridge lite screenshot">
+  <img src="https://github.com/dremin/message-bridge/raw/main/screenshot2.png" alt="Message Bridge lite screenshot">
 </p>
 
 ## Requirements
@@ -12,7 +12,7 @@ A simple solution for accessing iMessage and SMS chats from older computers.
 Message Bridge runs on a modern Mac signed into iMessage. Once running, you can access it via a web browser on older computers.
 
 1. Modern Mac to run Message Bridge:
-   - macOS 10.15 or later (tested on macOS 10.15.7, 11.7.2, 12.6.2, 13.1, and 14.2.1)
+   - macOS 10.15 or later (tested on macOS 10.15.7, 11.7.2, 12.6.2, 13.1, 14.2.1, and 15.7)
    - Messages signed into iMessage with at least one existing chat
 2. Old machine to access Message Bridge:
    - Connected to the same network as the modern Mac running Message Bridge
@@ -26,7 +26,8 @@ Message Bridge runs on a modern Mac signed into iMessage. Once running, you can 
        - Scrolling doesn't work quite right in Classilla, but is usable
      - RetroZilla (tested 2.2)
      - Internet Explorer 5.5 or later (tested all versions)
-     - TenFourFox/InterWebPPC
+       - Internet Explorer 5.0 is supported if [the JScript 5.6 update](https://legacyupdate.net/download-center/search?q=jscript+5.6) is installed
+     - TenFourFox/InterWebPPC/Aquafox
      - Probably others!
    - The "lite" client works on browsers without JavaScript support, and browsers that don't support `XMLHttpRequest`.
 
@@ -65,11 +66,13 @@ The `Public` folder within the `MessageBridge` folder contains the standard web 
 #### Adjusting the standard client settings for slower machines
 
 If your machine has performance problems rendering the standard Message Bridge web client, there are a few settings at the very top of `Public/app.js` that you may change to improve performance:
-- **chatsLimit** (default: 20) Number of chats to load in the left pane
-- **messagesLimit** (default: 20) Number of messages to load in the right pane
-- **inlineImages** (default: true) Whether image attachments should be rendered inline or shown as download links
-- **inlineImageMaxSize** (default: 300) The maximum dimension of an inline image thumbnail
-- **refreshInterval** (default: 3000) How often (in milliseconds) to check for new messages
+- **`chatsLimit`** (default: `20`) Number of chats to load in the left pane
+- **`messagesLimit`** (default: `20`) Number of messages to load in the right pane
+- **`inlineImages`** (default: `true`) Whether image attachments should be rendered inline or shown as download links
+- **`inlineImageMaxSize`** (default: `300`) The maximum dimension of an inline image thumbnail
+- **`downloadScaledImages`** (default: `true`) Whether image attachments should be converted to JPEG and scaled down to `downloadImageMaxSize` when downloading
+- **`downloadImageMaxSize`** (default: `1500`) The maximum image dimension when clicking an image attachment
+- **`refreshInterval`** (default: `3000`) How often (in milliseconds) to check for new messages
 
 #### Using the "lite" Message Bridge client
 
@@ -83,47 +86,47 @@ If you'd like to integrate Message Bridge into your own client, you can use the 
 
 ### Getting chats
 
-GET /chats
+GET `/chats`
 
 **Query parameters:**
-- **limit** (default: 5) Controls the number of chats to return.
+- **`limit`** (default: 5) Controls the number of chats to return.
 
 #### Response
 
 Array of `Chat`:
-- **id** Unique chat ID, used to request a chat's messages
-- **replyId** Unique chat reply ID, used when sending a message to a chat
-- **name** Display name for the chat (group name or recipient name)
-- **lastMessage** Latest message received for the chat
-- **lastMessageId** ID of the latest message received for the chat
-- **lastReceived** Date/time the latest message was received
-- **service** Service for the chat, `iMessage` or `SMS`
+- **`id`** Unique chat ID, used to request a chat's messages
+- **`replyId`** Unique chat reply ID, used when sending a message to a chat
+- **`name`** Display name for the chat (group name or recipient name)
+- **`lastMessage`** Latest message received for the chat
+- **`lastMessageId`** ID of the latest message received for the chat
+- **`lastReceived`** Date/time the latest message was received
+- **`service`** Service for the chat, `iMessage`, `RCS`, or `SMS`
 
 ### Getting chat messages
 
-GET /chats/{chatId}/messages
+GET `/chats/{chatId}/messages`
 
 **Query parameters:**
-- **format** (default: false) Determines whether messages include HTML formatting for links.
-- **limit** (default: 5) Controls the number of chat messages to return.
+- **`format`** (default: `false`) Determines whether messages include HTML formatting for links.
+- **`limit`** (default: `5`) Controls the number of chat messages to return.
 
 #### Response
 
 Array of `ChatMessage`:
-- **id** Unique message ID
-- **chatId** Unique chat ID
-- **isMe** Boolean indicating if the message was sent by the local user
-- **from** Chat participant who sent the message _(ignore if `isMe` is `true`)_
-- **body** Message body text
-- **lastReceived** Date/time the message was received
-- **attachments** (optional) Array of `Attachment`:
-  - **id** Unique attachment ID, used to request the file
-  - **filename** The attachment filename to display
-  - **type** MIME type of the attachment
+- **`id`** Unique message ID
+- **`chatId`** Unique chat ID
+- **`isMe`** Boolean indicating if the message was sent by the local user
+- **`from`** Chat participant who sent the message _(ignore if `isMe` is `true`)_
+- **`body`** Message body text
+- **`lastReceived`** Date/time the message was received
+- **`attachments`** (optional) Array of `Attachment`:
+  - **`id`** Unique attachment ID, used to request the file
+  - **`filename`** The attachment filename to display
+  - **`type`** MIME type of the attachment
 
 ### Getting the latest chat message ID
 
-GET /chats/latest
+GET `/chats/latest`
 
 This is useful for checking for new messages from a client without needing to parse large responses.
 
@@ -133,7 +136,7 @@ Unique message ID. Note that this ID may be different from the most recent `late
 
 ### Getting an attachment
 
-GET /attachments/{attachmentId}
+GET `/attachments/{attachmentId}`
 
 #### Response
 
@@ -141,10 +144,11 @@ Responds with the file.
 
 ### Getting an attachment thumbnail
 
-GET /attachments/{attachmentId}/thumb
+GET `/attachments/{attachmentId}/thumb`
 
 **Query parameters:**
-- **maxSize** (default: 300) The maximum dimension of the thumbnail
+- **`download`** (default: `false`) Whether the response should include a `Content-Disposition` header to prompt a download
+- **`maxSize`** (default: `300`) The maximum dimension of the thumbnail
 
 #### Response
 
@@ -152,13 +156,13 @@ Responds with the image thumbnail if the attachment is an image.
 
 ### Sending a message to a chat
 
-POST /chats
+POST `/chats`
 
 **Headers:**
-- **Content-Type:** application/json
+- **`Content-Type`** `application/json`
 
 **Parameters:**
-- **address** Chat `replyId` retrieved from `GET /chats` (or address of desired recipient for a new chat)
-- **isReply** Boolean indicating if this message is a reply to an existing chat or a new chat
-- **service** Service for the chat, `iMessage` or `SMS`. Only needed if `isReply` is `false`.
-- **message** Message body text
+- **`address`** Chat `replyId` retrieved from `GET /chats` (or address of desired recipient for a new chat)
+- **`isReply`** Boolean indicating if this message is a reply to an existing chat or a new chat
+- **`service`** Service for the chat, `iMessage`, `RCS`, or `SMS`. Only needed if `isReply` is `false`.
+- **`message`** Message body text
