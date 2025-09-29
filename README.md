@@ -38,6 +38,7 @@ Perform the following steps on your modern Mac signed into iMessage.
 1. Download from the [releases page](https://github.com/dremin/message-bridge/releases).
 2. Uncompress the downloaded archive and open the MessageBridge directory.
 3. Right-click (or control-click) `MessageBridge`, select Open, then click Open in the alert to start Message Bridge.
+   - If macOS only gives you an option to move to the trash, you must open System Settings > Privacy & Security, scroll to the bottom, and select the option to open MessageBridge there.
 4. **Important:** You must grant permissions so that Message Bridge can send messages, access received messages, and access contacts:
    - You may be prompted to allow Terminal to access the folder where Message Bridge resides; click OK if so.
    - You will be prompted to allow Terminal to control Messages. Click OK.
