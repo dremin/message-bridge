@@ -123,7 +123,7 @@ input {
 	width: 70%;
 }
 
-#no-selected-chat p {
+p.placeholder {
 	text-align: center;
 	padding: 50px;
 	font-size: 24px;

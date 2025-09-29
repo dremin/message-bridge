@@ -10,4 +10,5 @@ import Vapor
 
 struct AttachmentThumb: Content {
     var maxSize: Int64?
+    var download: Bool?
 }

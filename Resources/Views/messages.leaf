@@ -4,8 +4,7 @@
         <title>#(chat.name) - Messages</title>
     </head>
     <body>
-        <h1>#(chat.name)</h1>
-        <a href="/lite"><b>&lt; Back to chats list</b></a><br><br>
+        <h1><a href="/lite">Chats</a> / #(chat.name)</h1>
         <b>Send message:</b>
         <form action="/lite" method="post">
             <input type="text" name="message" size="40" autocomplete="off">
@@ -26,7 +25,11 @@
         <p>#(message.body)</p>
     #if(message.attachments):
         #for(attachment in message.attachments):
-        <a href="/attachments/#(attachment.id)">#(attachment.filename)</a><br>
+            #if(attachment.type == "image/jpeg" || attachment.type == "image/png" || attachment.type == "image/tiff" || attachment.type == "image/heic"):
+                <a href="/attachments/#(attachment.id)/thumb?download=true&amp;maxSize=500">#(attachment.filename)</a><br>
+            #else:
+                <a href="/attachments/#(attachment.id)">#(attachment.filename)</a><br>
+            #endif
         #endfor
     #endif
 #endfor

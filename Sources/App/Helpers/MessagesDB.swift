@@ -47,6 +47,11 @@ public class MessagesDB {
         
         if !format {
             return sanitizedText
+                .replacingOccurrences(of: "’", with: "'")
+                .replacingOccurrences(of: "‘", with: "'")
+                .replacingOccurrences(of: "“", with: "\"")
+                .replacingOccurrences(of: "”", with: "\"")
+                .replacingOccurrences(of: "…", with: "...")
         }
         
         do {
