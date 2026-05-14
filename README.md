@@ -167,3 +167,7 @@ POST `/chats`
 - **`isReply`** Boolean indicating if this message is a reply to an existing chat or a new chat
 - **`service`** Service for the chat, `iMessage`, `RCS`, or `SMS`. Only needed if `isReply` is `false`.
 - **`message`** Message body text
+
+### Icon Source
+
+<a href="https://www.flaticon.com/free-icons/chat-box" title="chat box icons">Chat box icon created by Pixel perfect - Flaticon</a>, used with permission.

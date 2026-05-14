@@ -2,10 +2,17 @@
 <html lang="en">
 	<head>
 		<title>Messages</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-title" content="Messages">
+		<link rel="manifest" href="/manifest.json">
+		<link rel="apple-touch-icon" href="/icons/icon-192.png">
 		<link rel="stylesheet" href="style.css">
 		<!-- Polyfill for JSON.parse and JSON.stringify -->
 		<script type="text/javascript" src="json3.min.js"></script>
 		<script defer type="text/javascript" src="app.js"></script>
+		<script>if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js');</script>
 	</head>
 	<body>
 		<div id="chat-list"><p class="placeholder">Loading...</p></div>

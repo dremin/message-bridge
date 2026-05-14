@@ -15,6 +15,16 @@ WORKDIR="${PRODUCT} `date '+%Y-%m-%d_%H.%M.%S'`"
 ZIPROOT="${WORKDIR}/${PRODUCT}"
 APP="${ZIPROOT}/bin/${PRODUCT}"
 
+# Optionally extract Apple icons before packaging
+printf "Extract Apple icons from Messages.app? [y/N] "
+read EXTRACT_ICONS
+case "$EXTRACT_ICONS" in
+    [yY])
+        echo "Extracting icons..."
+        "$(dirname "$0")/extract-icon.sh"
+        ;;
+esac
+
 # Set up directories to be zipped
 mkdir -p "${ZIPROOT}"
 mkdir -p "${ZIPROOT}/bin"
